@@ -1,5 +1,17 @@
 #!/bin/bash
 
-if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
+{% include 'header.j2' %}
+
+set -euv
+
+django-admin runserver 24817 >> ~/django_runserver.log 2>&1 &
+sleep 5
+
+cd "${TRAVIS_BUILD_DIR}"
+
+if [[ "$TRAVIS_EVENT_TYPE" = "cron" ]]; then
   echo "--- Performance Tests ---"
   pytest -vv -r sx --color=yes --pyargs --durations=0 {{ plugin_snake }}.tests.performance
+else
+  exit 0
+fi
