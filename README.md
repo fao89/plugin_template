@@ -238,7 +238,7 @@ http://localhost:24817/pulp/api/v3/docs
 Your plugin is discoverable by Pulp because it is [a Django application that subclasses
 pulpcore.plugin.PulpPluginAppConfig]({{ plugin_snake }}/app/__init__.py)
 
-For more information about plugin discoverability, including how it works and plugin
+For more information about plugin discoverability, including how it works and plugin.
 entrypoints see [the discoverability documentation](meta_docs/discoverability.md)
 
 
