@@ -306,7 +306,7 @@ def write_template_section(config, name, plugin_root_dir, verbose=False):
 
     files_templated = 0
     files_copied = 0
-    gitref = subprocess.check_output(["git", "describe", "--dirty"]).decode().strip()
+    # gitref = subprocess.check_output(["git", "describe", "--dirty"]).decode().strip()
     for relative_path in generate_relative_path_set(section_template_dir):
         if config["issue_tracker"] != "redmine" and "redmine" in relative_path:
             continue
@@ -326,7 +326,7 @@ def write_template_section(config, name, plugin_root_dir, verbose=False):
                 template,
                 plugin_root_dir,
                 destination,
-                {"section": name, "gitref": gitref, **config},
+                {"section": name, "gitref": "gitref", **config},
             )
             files_templated += 1
             if verbose:
