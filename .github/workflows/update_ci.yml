@@ -1,6 +1,7 @@
 ---
 name: CI Update
 on:
+  push:
   workflow_dispatch:
     inputs:
       all_branches:
@@ -43,3 +44,43 @@ jobs:
           done
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+  galaxy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # by default, it uses a depth of 1
+          # this fetches all history so that we can read each commit
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.8"
+
+      - name: Install python dependencies
+        run: |
+          echo ::group::PYDEPS
+          pip install gitpython requests packaging jinja2 pyyaml
+          echo ::endgroup::
+
+      - name: Configure Git with pulpbot name and email
+        run: |
+          git config --global user.name 'pulpbot'
+          git config --global user.email 'pulp-infra@redhat.com'
+
+      - name: Set short_ref
+        id: vars
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - name: Run update
+        run: |
+          cd ..
+          git clone https://github.com/ansible/galaxy_ng.git
+          cd galaxy_ng
+          .github/workflows/scripts/update_ci.sh
+
+      - name: Create Pull Request for CI files
+        run: |
+          gh auth login --with-token ${{ secrets.RELEASE_TOKEN }}
+          gh pr create --title Update CI files from ${{ steps.vars.outputs.short_ref }} branch --body No-Issue
